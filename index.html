@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Salário</title>
+  <!-- Ícones utilizados na interface -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  
+  <style>
+    * { 
+      margin: 0; 
+      padding: 0; 
+      box-sizing: border-box; 
+    }
+    
+    body { 
+      font-family: sans-serif; 
+      background-color: #f4f6f9;
+    }
+    
+    .container { 
+      max-width: 700px; 
+      margin: 2rem auto; 
+      background: white; 
+      border-radius: 20px; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.1); 
+      overflow: hidden; 
+    }
+    
+    .header { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      padding: 2.5rem 2rem; 
+      color: white; 
+      text-align: center; 
+    }
+    
+    .header h1 { 
+      font-size: 28px; 
+      font-weight: 600; 
+      margin: 0.5rem 0; 
+    }
+    
+    .header p { 
+      font-size: 14px; 
+      margin: 0; 
+      opacity: 0.9; 
+    }
+    
+    .content { 
+      padding: 2rem; 
+    }
+    
+    .summary { 
+      background: linear-gradient(135deg, #f5f7fa 0%, #f0f3f7 100%); 
+      border-radius: 16px; 
+      padding: 2rem; 
+      margin-bottom: 2rem; 
+      text-align: center; 
+    }
+    
+    .summary-label { 
+      font-size: 12px; 
+      color: #666; 
+      margin-bottom: 8px; 
+      font-weight: 600; 
+      letter-spacing: 1px; 
+      text-transform: uppercase; 
+    }
+    
+    .summary-value { 
+      font-size: 36px; 
+      font-weight: 700; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      -webkit-background-clip: text; 
+      -webkit-text-fill-color: transparent; 
+      margin-bottom: 1.5rem; 
+    }
+    
+    .summary-row { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 1.5rem; 
+      padding-top: 1.5rem; 
+      border-top: 2px solid rgba(102, 126, 234, 0.2); 
+    }
+    
+    .summary-col { 
+      text-align: center; 
+    }
+    
+    .discount-label { 
+      font-size: 11px; 
+      color: #666; 
+      font-weight: 600; 
+      text-transform: uppercase; 
+      margin-bottom: 8px; 
+    }
+    
+    .discount-value { 
+      font-size: 24px; 
+      font-weight: 700; 
+    }
+    
+    .discount-red { 
+      color: #e74c3c; 
+    }
+    
+    .discount-green { 
+      color: #27ae60; 
+    }
+    
+    .section-title { 
+      font-size: 14px; 
+      font-weight: 600; 
+      margin: 1.5rem 0 1rem 0; 
+      color: #333; 
+      letter-spacing: 0.5px; 
+      text-transform: uppercase; 
+    }
+    
+    .component-row { 
+      display: grid; 
+      grid-template-columns: 1fr 120px 44px; 
+      gap: 10px; 
+      margin-bottom: 10px; 
+    }
+    
+    .component-row input { 
+      padding: 10px 12px; 
+      border-radius: 8px; 
+      border: 1px solid #e8eaed; 
+      font-size: 14px; 
+      font-family: inherit; 
+    }
+    
+    .component-row input:last-of-type { 
+      text-align: right; 
+    }
+    
+    .btn-remove { 
+      background: transparent; 
+      border: 1px solid #e8eaed; 
+      border-radius: 8px; 
+      padding: 10px; 
+      cursor: pointer; 
+      color: #999; 
+      font-size: 16px; 
+      transition: all 0.2s; 
+    }
+    
+    .btn-remove:hover { 
+      color: #e74c3c; 
+      border-color: #e74c3c; 
+    }
+    
+    .btn-add { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+      border: none; 
+      border-radius: 10px; 
+      padding: 12px 16px; 
+      cursor: pointer; 
+      color: white; 
+      font-size: 14px; 
+      font-weight: 600; 
+      width: 100%; 
+      transition: all 0.3s; 
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3); 
+    }
+    
+    .btn-add:hover { 
+      transform: translateY(-2px); 
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4); 
+    }
+    
+    .discount-grid { 
+      display: grid; 
+      grid-template-columns: 1fr 1fr; 
+      gap: 12px; 
+    }
+    
+    .discount-card { 
+      background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%); 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+      border: 1px solid #f0d8d8; 
+      text-align: center; 
+    }
+    
+    .discount-icon { 
+      width: 48px; 
+      height: 48px; 
+      border-radius: 12px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      font-size: 24px; 
+      margin: 0 auto 12px; 
+    }
+    
+    .icon-inss { 
+      background: #fff3cd; 
+    }
+    
+    .icon-irrf { 
+      background: #f8d7da; 
+    }
+    
+    .percent { 
+      font-size: 11px; 
+      color: #999; 
+      margin: 0; 
+    }
+    
+    .badge { 
+      font-size: 10px; 
+      color: #666; 
+      margin-top: 8px; 
+      padding-top: 8px; 
+      border-top: 0.5px solid rgba(0,0,0,0.1); 
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <div style="font-size: 40px; margin-bottom: 12px;">💰</div>
+    <h1>Calculadora de Salário</h1>
+    <p>Tabelas 2026 - Alinhado com mercado</p>
+  </div>
+
+  <div class="content">
+    <div class="summary">
+      <div>
+        <div class="summary-label">Salário Bruto</div>
+        <div class="summary-value" id="bruteValue">R$ 3.000,00</div>
+      </div>
+      <div class="summary-row">
+        <div class="summary-col">
+          <div class="discount-label">Descontos</div>
+          <div class="discount-value discount-red" id="discountValue">R$ 0,00</div>
+        </div>
+        <div class="summary-col">
+          <div class="discount-label">Líquido</div>
+          <div class="discount-value discount-green" id="netValue">R$ 3.000,00</div>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">➕ Componentes de Salário</div>
+      <div id="components"></div>
+      <button class="btn-add" onclick="addComponent()">
+        <i class="ti ti-plus" style="margin-right: 8px;"></i>Adicionar componente
+      </button>
+    </div>
+
+    <div style="margin-top: 2rem;">
+      <div class="section-title">🧮 Descontos</div>
+      <div class="discount-grid">
+        <div class="discount-card">
+          <div class="discount-icon icon-inss">
+            <i class="ti ti-coin"></i>
+          </div>
+          <div class="discount-label">INSS</div>
+          <div class="discount-value discount-red" id="inssValue">R$ 0,00</div>
+          <div class="percent" id="inssPercent">0% do bruto</div>
+          <div class="badge">Faixas: 7,5% a 14%</div>
+        </div>
+        <div class="discount-card">
+          <div class="discount-icon icon-irrf">
+            <i class="ti ti-receipt"></i>
+          </div>
+          <div class="discount-label">IRRF</div>
+          <div class="discount-value discount-red" id="irrfValue">R$ 0,00</div>
+          <div class="percent" id="irrfPercent">0% do bruto</div>
+          <div class="badge">Tabela progressiva 2026</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let components = [{ id: 1, name: 'Salário Base', value: 3000 }];
+let nextId = 2;
+
+function formatCurrency(value) {
+  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+}
+
+function calculateINSS2026(brute) {
+  const faixas = [
+    { limite: 1621.00, aliquota: 0.075 },
+    { limite: 2902.84, aliquota: 0.09 },
+    { limite: 4354.27, aliquota: 0.12 },
+    { limite: 8475.55, aliquota: 0.14 }
+  ];
+  
+  let inss = 0;
+  let anterior = 0;
+  
+  for (let faixa of faixas) {
+    if (brute <= anterior) break;
+    const valor = Math.min(brute, faixa.limite) - anterior;
+    inss += valor * faixa.aliquota;
+    anterior = faixa.limite;
+  }
+  
+  return inss;
+}
+
+function calculateIRRF2026(baseCalculo) {
+  if (baseCalculo <= 5000) {
+    return 0;
+  }
+  
+  const faixas = [
+    { limite: 2826.65, aliquota: 0.075, deducao: 158.40 },
+    { limite: 3751.05, aliquota: 0.15, deducao: 370.40 },
+    { limite: 4664.68, aliquota: 0.225, deducao: 651.73 },
+    { limite: 7786.02, aliquota: 0.275, deducao: 886.63 }
+  ];
+  
+  let irrf = 0;
+  
+  for (let faixa of faixas) {
+    if (baseCalculo <= faixa.limite) {
+      irrf = (baseCalculo * faixa.aliquota) - faixa.deducao;
+      return Math.max(0, irrf);
+    }
+  }
+  
+  if (baseCalculo > 7786.02) {
+    irrf = (baseCalculo * 0.275) - 886.63;
+  }
+  
+  return Math.max(0, irrf);
+}
+
+function render() {
+  const brute = components.reduce((sum, c) => sum + (c.value || 0), 0);
+  const inss = calculateINSS2026(brute);
+  const baseIRRF = brute - inss;
+  const irrf = calculateIRRF2026(baseIRRF);
+  const net = brute - inss - irrf;
+
+  document.getElementById('bruteValue').textContent = formatCurrency(brute);
+  document.getElementById('discountValue').textContent = formatCurrency(inss + irrf);
+  document.getElementById('netValue').textContent = formatCurrency(net);
+  document.getElementById('inssValue').textContent = formatCurrency(inss);
+  document.getElementById('irrfValue').textContent = formatCurrency(irrf);
+  document.getElementById('inssPercent').textContent = (brute > 0 ? ((inss / brute) * 100).toFixed(2) : '0') + '% do bruto';
+  document.getElementById('irrfPercent').textContent = (brute > 0 ? ((irrf / brute) * 100).toFixed(2) : '0') + '% do bruto';
+
+  let html = '';
+  components.forEach(comp => {
+    html += `<div class="component-row">
+      <input type="text" placeholder="Ex: Bônus, Comissão..." value="${comp.name}" onchange="updateComponent(${comp.id}, 'name', this.value)">
+      <input type="number" placeholder="0,00" value="${comp.value || ''}" onchange="updateComponent(${comp.id}, 'value', this.value)" step="0.01">
+      <button class="btn-remove" onclick="removeComponent(${comp.id})" title="Remover">
+        <i class="ti ti-trash"></i>
+      </button>
+    </div>`;
+  });
+  document.getElementById('components').innerHTML = html;
+}
+
+function addComponent() {
+  components.push({ id: nextId, name: '', value: 0 });
+  nextId++;
+  render();
+}
+
+function updateComponent(id, field, val) {
+  const comp = components.find(c => c.id === id);
+  if (comp) {
+    comp[field] = field === 'value' ? parseFloat(val) || 0 : val;
+    render();
+  }
+}
+
+function removeComponent(id) {
+  components = components.filter(c => c.id !== id);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>
